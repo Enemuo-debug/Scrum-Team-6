@@ -1,0 +1,36 @@
+<!-- index.html -->
+<html>
+<head>
+  <title>TechSprout Chat Area</title>
+  <script src="/socket.io/socket.io.js"></script>
+</head>
+<body>
+  <div id="messages"></div>
+  <form id="message-form">
+    <input type="text" name="message">
+    <button type="submit">Send</button>
+  </form>
+  <script>
+    const socket = io.connect('http://localhost:3000/');
+    const messagesDiv = document.getElementById("messages");
+    const messageForm = document.getElementById("message-form");
+
+    // Listen for "chat message" events from the server
+    socket.on("chat message", (data) => {
+      const messageDiv = document.createElement("div");
+      messageDiv.setAttribute('class', 'message')
+      messageDiv.innerText = data.text;
+      messagesDiv.appendChild(messageDiv);
+    });
+
+    // Send a "chat message" event to the server when the form is submitted
+    messageForm.addEventListener("submit", (event) => {
+      event.preventDefault();
+      const messageInput = messageForm.elements.message;
+      const text = messageInput.value;
+      socket.emit("chat message", { text });
+      messageInput.value = "";
+    });
+  </script>
+</body>
+</html>
